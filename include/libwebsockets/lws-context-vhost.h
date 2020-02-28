@@ -711,6 +711,7 @@ struct lws_context_creation_info {
 	uint8_t udp_loss_sim_rx_pc;
 	/**< CONTEXT: percentage of udp reads we actually received
 	 * to make disappear, in order to simulate and test udp retry flow */
+#if defined(LWS_WITH_SECURE_STREAMS)
 	const char *pss_policies_json; /**< CONTEXT: point to a string
 	 * containing a JSON description of the secure streams policies.  Set
 	 * to NULL if not using Secure Streams. */
@@ -729,6 +730,7 @@ struct lws_context_creation_info {
 	 * the socket path given in ss_proxy_bind (start it with a + or +@);
 	 * nonzero means connect via a tcp socket to the tcp address in
 	 * ss_proxy_bind and the given port */
+#endif
 
 	/* Add new things just above here ---^
 	 * This is part of the ABI, don't needlessly break compatibility
