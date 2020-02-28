@@ -26,6 +26,7 @@
 
 #include <private-lib-core.h>
 
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
 static int
 ss_http_multipart_parser(lws_ss_handle_t *h, void *in, size_t len)
 {
@@ -145,6 +146,7 @@ around:
 
 	return 0;
 }
+#endif
 
 static const uint8_t blob_idx[] = {
 	LWS_SYSBLOB_TYPE_AUTH,
@@ -222,6 +224,8 @@ secstream_h1(struct lws *wsi, enum lws_callback_reasons reason, void *user,
 		 */
 		lws_validity_confirmed(wsi);
 
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
+
 		if (lws_hdr_copy(wsi, (char *)buf, sizeof(buf),
 				 WSI_TOKEN_HTTP_CONTENT_TYPE) > 0 &&
 		/* multipart/form-data;
@@ -277,6 +281,9 @@ secstream_h1(struct lws *wsi, enum lws_callback_reasons reason, void *user,
 malformed:
 		lwsl_notice("%s: malformed multipart header\n", __func__);
 		return -1;
+#else
+		break;
+#endif
 
 	case LWS_CALLBACK_CLIENT_APPEND_HANDSHAKE_HEADER:
 		if (h->writeable_len)
@@ -377,8 +384,10 @@ malformed:
 		if (!h)
 			return 0;
 
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
 		if (h->u.http.boundary[0])
 			return ss_http_multipart_parser(h, in, len);
+#endif
 
 		if (!h->subseq) {
 			f |= LWSSS_FLAG_SOM;
@@ -432,6 +441,7 @@ malformed:
 		if (!h->rideshare)
 			h->rideshare = h->policy;
 
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
 		if (!h->inside_msg && h->rideshare->u.http.multipart_name)
 			lws_client_http_multipart(wsi,
 				h->rideshare->u.http.multipart_name,
@@ -442,6 +452,8 @@ malformed:
 		buflen = lws_ptr_diff(end, p);
 		if (h->policy->u.http.multipart_name)
 			buflen -= 24; /* allow space for end of multipart */
+
+#endif
 
 		if (h->info.tx(ss_to_userobj(h),  h->txord++, p, &buflen, &f)) {
 			/* don't want to send anything */
@@ -455,6 +467,7 @@ malformed:
 		p += buflen;
 
 		if (f & LWSSS_FLAG_EOM) {
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
 			/* end of rideshares */
 			if (!h->rideshare->rideshare_streamtype) {
 				lws_client_http_body_pending(wsi, 0);
@@ -462,10 +475,13 @@ malformed:
 					lws_client_http_multipart(wsi, NULL, NULL, NULL,
 						(char **)&p, (char *)end);
 			} else {
+#endif
 				h->rideshare = lws_ss_policy_lookup(wsi->context,
 						h->rideshare->rideshare_streamtype);
 				lws_callback_on_writable(wsi);
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
 			}
+#endif
 
 			h->inside_msg = 0;
 		} else {
@@ -522,11 +538,13 @@ secstream_connect_munge_h1(lws_ss_handle_t *h, char *buf, size_t len,
 	if (!h->policy->u.http.url)
 		return 0;
 
+#if !defined(LWS_PLAT_FREERTOS) || defined(LWS_ROLE_H2)
 	if (h->policy->flags & LWSSSPOLF_HTTP_MULTIPART)
 		i->ssl_connection |= LCCSCF_HTTP_MULTIPART_MIME;
 
 	if (h->policy->flags & LWSSSPOLF_HTTP_X_WWW_FORM_URLENCODED)
 		i->ssl_connection |= LCCSCF_HTTP_X_WWW_FORM_URLENCODED;
+#endif
 
 	/* protocol aux is the path part */
 
