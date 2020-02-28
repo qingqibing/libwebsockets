@@ -2442,6 +2442,7 @@ fail_length:
 }
 #endif
 
+#if defined(LWS_ROLE_WS)
 int
 lws_h2_ws_handshake(struct lws *wsi)
 {
@@ -2514,6 +2515,7 @@ lws_h2_ws_handshake(struct lws *wsi)
 
 	return 0;
 }
+#endif
 
 int
 lws_read_h2(struct lws *wsi, unsigned char *buf, lws_filepos_t len)

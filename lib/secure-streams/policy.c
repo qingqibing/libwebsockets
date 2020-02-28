@@ -30,7 +30,7 @@ typedef struct backoffs {
 	lws_retry_bo_t r;
 } backoff_t;
 
-static const char * const lejp_tokens[] = {
+static const char * const lejp_tokens_policy[] = {
 	"release",
 	"product",
 	"schema-version",
@@ -734,8 +734,8 @@ lws_ss_policy_parse_begin(struct lws_context *context)
 		return -1;
 	}
 	*p = 0;
-	lejp_construct(&args->jctx, lws_ss_policy_parser_cb, args, lejp_tokens,
-		       LWS_ARRAY_SIZE(lejp_tokens));
+	lejp_construct(&args->jctx, lws_ss_policy_parser_cb, args,
+		       lejp_tokens_policy, LWS_ARRAY_SIZE(lejp_tokens_policy));
 
 	return 0;
 }

@@ -36,7 +36,7 @@ typedef struct ss_api_amazon_auth {
 	int			expires_secs;
 } ss_api_amazon_auth_t;
 
-static const char * const lejp_tokens[] = {
+static const char * const lejp_tokens_lwa[] = {
 	"access_token",
 	"expires_in",
 };
@@ -121,7 +121,8 @@ ss_api_amazon_auth_rx(void *userobj, const uint8_t *buf, size_t len, int flags)
 	if (buf) {
 		if (flags & LWSSS_FLAG_SOM) {
 			lejp_construct(&m->jctx, auth_api_amazon_com_parser_cb,
-				       m, lejp_tokens, LWS_ARRAY_SIZE(lejp_tokens));
+				       m, lejp_tokens_lwa,
+				       LWS_ARRAY_SIZE(lejp_tokens_lwa));
 			lws_system_blob_heap_empty(ab);
 		}
 

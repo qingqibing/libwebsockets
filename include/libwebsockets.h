@@ -579,10 +579,11 @@ struct lws;
 #include <libwebsockets/lws-secure-streams.h>
 #include <libwebsockets/lws-secure-streams-policy.h>
 #include <libwebsockets/lws-secure-streams-client.h>
-
+#if !defined(LWS_PLAT_FREERTOS)
 #include <libwebsockets/abstract/abstract.h>
 
 #include <libwebsockets/lws-test-sequencer.h>
+#endif
 #include <libwebsockets/lws-async-dns.h>
 
 #if defined(LWS_WITH_TLS)
